@@ -1,0 +1,126 @@
+.cs-container {
+  position: relative;
+  width: 100%;
+}
+
+.cs-trigger {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8125rem 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: left;
+}
+
+.cs-trigger:hover, .cs-trigger.open {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(201, 168, 108, 0.4);
+}
+
+.cs-trigger.open {
+  border-color: rgba(201, 168, 108, 0.6);
+  box-shadow: 0 0 0 3px rgba(201, 168, 108, 0.08);
+}
+
+.cs-value {
+  flex: 1;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.cs-icon {
+  color: rgba(255, 255, 255, 0.5);
+  transition: transform 0.3s ease;
+}
+
+.cs-icon.open {
+  transform: rotate(180deg);
+  color: #c9a86c;
+}
+
+.cs-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: #1a1c2e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  overflow: hidden;
+  animation: slideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top center;
+}
+
+.cs-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.cs-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cs-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cs-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.cs-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.cs-option {
+  padding: 0.8125rem 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  margin-bottom: 2px;
+}
+
+.cs-option:last-child {
+  margin-bottom: 0;
+}
+
+.cs-option:hover {
+  background: rgba(201, 168, 108, 0.1);
+  color: #fff;
+}
+
+.cs-option.selected {
+  background: rgba(201, 168, 108, 0.15);
+  color: #c9a86c;
+  font-weight: 600;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

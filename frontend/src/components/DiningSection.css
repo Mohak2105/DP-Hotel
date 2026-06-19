@@ -1,0 +1,157 @@
+.dining-section {
+  padding: 3.5rem 0;
+  background-color: hsl(30 10% 16% / 0.3);
+}
+
+@media (min-width: 768px) {
+  .dining-section {
+    padding: 6rem 0;
+  }
+}
+
+.container {
+  margin: 0 auto;
+  max-width: 80rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+.dining-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+@media (min-width: 1024px) {
+  .dining-content {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.image-container {
+  flex: 1;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  width: 100%;
+}
+
+@media (max-width: 1023px) {
+  .image-container {
+    margin-left: -0.25rem;
+    margin-right: -0.25rem;
+    width: calc(100% + 0.5rem);
+    border-radius: 0.5rem;
+  }
+  .dining-image {
+    height: 24rem;
+  }
+}
+
+.dining-image {
+  height: 31.25rem;
+  width: 100%;
+  object-fit: cover;
+}
+
+.dining-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.section-header {
+  margin-bottom: 2rem;
+}
+
+.section-subtitle {
+  font-family: var(--font-accent);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: hsl(38 65% 50%);
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-family: var(--font-heading);
+  font-size: 2.25rem;
+  font-weight: 700;
+}
+
+@media (min-width: 768px) {
+  .section-title {
+    font-size: 3rem;
+  }
+}
+
+.divider {
+  margin: 1rem 0 0;
+  height: 1px;
+  width: 5rem;
+  background: linear-gradient(135deg, hsl(38 65% 50%), hsl(36 70% 35%));
+}
+
+.venues-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.venue-card {
+  background: hsl(30 12% 10% / 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid hsl(30 10% 18% / 0.5);
+  border-radius: 0.5rem;
+  padding: 0.875rem;
+  transition: border-color 0.2s ease;
+}
+
+@media (min-width: 640px) {
+  .venue-card {
+    padding: 1.25rem;
+  }
+}
+
+.venue-card:hover {
+  border-color: hsl(38 65% 50% / 0.3);
+}
+
+.venue-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.icon-wrapper {
+  border-radius: 9999px;
+  background-color: hsl(38 65% 50% / 0.1);
+  padding: 0.75rem;
+}
+
+.venue-icon {
+  height: 1.25rem;
+  width: 1.25rem;
+  color: hsl(38 65% 50%);
+}
+
+.venue-name {
+  font-family: var(--font-heading);
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.venue-description {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: hsl(30 10% 55%);
+  line-height: 1.6;
+}
