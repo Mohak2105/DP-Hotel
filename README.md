@@ -53,14 +53,9 @@ npm run build
 - **Icons**: Lucide React
 - **Testing**: Vitest
 
-## Deployment
 
-This project can be deployed to any static hosting service:
 
-- Vercel
-- Netlify
-- GitHub Pages
-- Traditional web servers
+
 
 Simply run `npm run build` and deploy the `dist` folder.
 
