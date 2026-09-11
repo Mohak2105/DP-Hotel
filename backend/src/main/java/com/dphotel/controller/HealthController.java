@@ -9,10 +9,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
 public class HealthController {
 
-    @GetMapping("/health")
+    @GetMapping("/")
+    public ResponseEntity<Map<String, Object>> root() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "ok");
+        response.put("service", "DP Hotel Backend (Spring Boot 3)");
+        response.put("message", "API server is running successfully!");
+        response.put("health", "/api/health");
+        response.put("rooms", "/api/rooms");
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/api")
+    public ResponseEntity<Map<String, Object>> api() {
+        return root();
+    }
+
+    @GetMapping("/api/health")
     public ResponseEntity<Map<String, String>> health() {
         Map<String, String> response = new HashMap<>();
         response.put("status", "ok");
