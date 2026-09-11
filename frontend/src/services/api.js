@@ -119,6 +119,50 @@ export const eventsAPI = {
   getTypes: () => apiRequest('/events/types'),
 };
 
+// Admin API
+export const adminAPI = {
+  // Bookings
+  getAllBookings: () => apiRequest('/bookings'),
+  getBookingStats: () => apiRequest('/bookings/admin/stats'),
+  updateBookingStatus: (id, status) => apiRequest(`/bookings/${id}/status`, {
+    method: 'PUT',
+    body: JSON.stringify({ status }),
+  }),
+
+  // Payments
+  getAllPayments: () => apiRequest('/payments'),
+  getPaymentStats: () => apiRequest('/payments/admin/stats'),
+  refundPayment: (id) => apiRequest(`/payments/${id}/refund`, {
+    method: 'POST',
+  }),
+
+  // Rooms
+  createRoom: (roomData) => apiRequest('/rooms', {
+    method: 'POST',
+    body: JSON.stringify(roomData),
+  }),
+  updateRoom: (id, roomData) => apiRequest(`/rooms/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(roomData),
+  }),
+
+  // Contact Messages
+  getAllMessages: () => apiRequest('/contact'),
+  markMessageRead: (id) => apiRequest(`/contact/${id}/read`, {
+    method: 'PUT',
+  }),
+  deleteMessage: (id) => apiRequest(`/contact/${id}`, {
+    method: 'DELETE',
+  }),
+
+  // Events
+  getAllEvents: () => apiRequest('/events'),
+  updateEventStatus: (id, status) => apiRequest(`/events/${id}/status`, {
+    method: 'PUT',
+    body: JSON.stringify({ status }),
+  }),
+};
+
 export default {
   auth: authAPI,
   rooms: roomsAPI,
@@ -126,4 +170,5 @@ export default {
   payments: paymentsAPI,
   contact: contactAPI,
   events: eventsAPI,
+  admin: adminAPI,
 };
