@@ -127,6 +127,16 @@ const BookingPage = () => {
             setSelectedRoom(room);
             setCurrentStep(2);
           }
+        } else if (roomType) {
+          const normalized = roomType.toLowerCase().replace(/[-_]/g, ' ');
+          const room = response.data.rooms.find(r => 
+            r.room_type?.toLowerCase() === roomType.toLowerCase() ||
+            (r.name && r.name.toLowerCase().includes(normalized)) ||
+            (r.room_type && normalized.includes(r.room_type.toLowerCase()))
+          );
+          if (room) {
+            setSelectedRoom(room);
+          }
         }
       }
     } catch (err) {
