@@ -26,6 +26,8 @@ const roomImages = {
   'deluxe': roomDeluxe,
 };
 
+const HOTEL_UPI_ID = '7498507907@kotakbank';
+
 const AMENITY_ICONS = {
   'WiFi': Wifi,
   'TV': Tv,
@@ -746,7 +748,7 @@ const BookingPage = () => {
 
                 <div className="bp-qr-image-wrap">
                   <QRCodeSVG
-                    value={`upi://pay?pa=mohaksidgonda21-1@okaxis&pn=Hotel Deccan Pavilion&am=${(calculateTotalPrice() + calculateTaxes()).toFixed(2)}&cu=INR&tn=Booking Payment - ${selectedRoom?.name || 'Room'}`}
+                    value={`upi://pay?pa=${HOTEL_UPI_ID}&pn=Hotel Deccan Pavilion&am=${(calculateTotalPrice() + calculateTaxes()).toFixed(2)}&cu=INR&tn=Booking Payment - ${selectedRoom?.name || 'Room'}`}
                     size={180}
                     bgColor="#ffffff"
                     fgColor="#1a1a2e"
@@ -770,7 +772,7 @@ const BookingPage = () => {
 
                 <div className="bp-qr-upi-id">
                   <span className="bp-qr-upi-label">UPI ID</span>
-                  <span className="bp-qr-upi-value">mohaksidgonda21-1@okaxis</span>
+                  <span className="bp-qr-upi-value">{HOTEL_UPI_ID}</span>
                 </div>
               </div>
 
