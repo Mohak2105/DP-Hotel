@@ -61,7 +61,7 @@ const AdminPanel = () => {
   const [showRoomForm, setShowRoomForm] = useState(false);
   const [editingRoom, setEditingRoom] = useState(null);
   const [roomForm, setRoomForm] = useState({
-    name: "", room_type: "deluxe", price_per_night: "", description: "",
+    name: "", room_number: "", room_type: "deluxe", price_per_night: "", description: "",
     capacity: "2", floor: "1", amenities: "WiFi, TV, AC, Mini Bar",
     images: "", status: "available"
   });
@@ -228,6 +228,7 @@ const AdminPanel = () => {
       setEditingRoom(room);
       setRoomForm({
         name: room.name || "",
+        room_number: room.room_number || room.roomNumber || "",
         room_type: room.room_type || "deluxe",
         price_per_night: room.price_per_night || "",
         description: room.description || "",
@@ -240,7 +241,7 @@ const AdminPanel = () => {
     } else {
       setEditingRoom(null);
       setRoomForm({
-        name: "", room_type: "deluxe", price_per_night: "", description: "",
+        name: "", room_number: "", room_type: "deluxe", price_per_night: "", description: "",
         capacity: "2", floor: "1", amenities: "WiFi, TV, AC, Mini Bar",
         images: "", status: "available"
       });
@@ -253,6 +254,8 @@ const AdminPanel = () => {
     try {
       const payload = {
         ...roomForm,
+        room_number: roomForm.room_number || undefined,
+        roomNumber: roomForm.room_number || undefined,
         price_per_night: parseFloat(roomForm.price_per_night),
         capacity: parseInt(roomForm.capacity),
         floor: parseInt(roomForm.floor),
@@ -532,6 +535,10 @@ const AdminPanel = () => {
                 <div className="admin-form-group">
                   <label>Room Name</label>
                   <input type="text" value={roomForm.name} onChange={e => setRoomForm({...roomForm, name: e.target.value})} required placeholder="e.g. Deluxe King Suite" />
+                </div>
+                <div className="admin-form-group">
+                  <label>Room Number</label>
+                  <input type="text" value={roomForm.room_number} onChange={e => setRoomForm({...roomForm, room_number: e.target.value})} placeholder="e.g. 101, 201" />
                 </div>
                 <div className="admin-form-group">
                   <label>Room Type</label>

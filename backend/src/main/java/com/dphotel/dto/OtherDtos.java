@@ -92,15 +92,18 @@ public class OtherDtos {
     }
 
     public static class RoomRequest {
+        @com.fasterxml.jackson.annotation.JsonAlias({"room_number", "roomNumber"})
         @JsonProperty("roomNumber")
         private String roomNumber;
 
+        @com.fasterxml.jackson.annotation.JsonAlias({"room_type", "roomType"})
         @JsonProperty("roomType")
         private String roomType;
 
         private String name;
         private String description;
 
+        @com.fasterxml.jackson.annotation.JsonAlias({"price_per_night", "pricePerNight"})
         @JsonProperty("pricePerNight")
         private BigDecimal pricePerNight;
 
@@ -108,6 +111,7 @@ public class OtherDtos {
         private List<String> amenities;
         private List<String> images;
 
+        @com.fasterxml.jackson.annotation.JsonAlias({"is_available", "isAvailable"})
         @JsonProperty("isAvailable")
         private Boolean isAvailable;
 

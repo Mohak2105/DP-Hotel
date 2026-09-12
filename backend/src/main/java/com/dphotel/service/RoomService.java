@@ -73,7 +73,11 @@ public class RoomService {
     public Room createRoom(OtherDtos.RoomRequest request) {
         Room room = new Room();
         room.setId(UUID.randomUUID().toString());
-        room.setRoomNumber(request.getRoomNumber());
+        String roomNumber = request.getRoomNumber();
+        if (roomNumber == null || roomNumber.trim().isEmpty()) {
+            roomNumber = "R-" + (int)(Math.random() * 900 + 100);
+        }
+        room.setRoomNumber(roomNumber);
         room.setRoomType(request.getRoomType());
         room.setName(request.getName());
         room.setDescription(request.getDescription());
