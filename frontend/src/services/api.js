@@ -99,6 +99,18 @@ export const paymentsAPI = {
   getByBooking: (bookingId) => apiRequest(`/payments/booking/${bookingId}`),
 };
 
+// Cashfree API
+export const cashfreeAPI = {
+  createOrder: (bookingId, returnUrl = '') => apiRequest('/payments/cashfree/create-order', {
+    method: 'POST',
+    body: JSON.stringify({ bookingId, returnUrl }),
+  }),
+  
+  verifyPayment: (orderId) => apiRequest(`/payments/cashfree/verify/${orderId}`, {
+    method: 'POST',
+  }),
+};
+
 // Contact API
 export const contactAPI = {
   submit: (messageData) => apiRequest('/contact', {
@@ -168,6 +180,7 @@ export default {
   rooms: roomsAPI,
   bookings: bookingsAPI,
   payments: paymentsAPI,
+  cashfree: cashfreeAPI,
   contact: contactAPI,
   events: eventsAPI,
   admin: adminAPI,

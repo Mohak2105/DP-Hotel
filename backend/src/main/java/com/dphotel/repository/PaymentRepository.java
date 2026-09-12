@@ -15,6 +15,8 @@ public interface PaymentRepository extends JpaRepository<Payment, String>, JpaSp
 
     Optional<Payment> findByBookingId(String bookingId);
 
+    Optional<Payment> findByTransactionId(String transactionId);
+
     List<Payment> findByUserIdOrderByCreatedAtDesc(String userId);
 
     @Query(value = """

@@ -5,7 +5,8 @@ import {
   Wifi, Tv, Coffee, Bath, Bed, MapPin, Phone, Mail, User,
   Star, Shield, Clock, ArrowLeft, Sparkles, CircleCheck, X
 } from "lucide-react";
-import { roomsAPI, authAPI, bookingsAPI, paymentsAPI } from "../services/api";
+import { roomsAPI, authAPI, bookingsAPI, paymentsAPI, cashfreeAPI } from "../services/api";
+import { load as loadCashfree } from "@cashfreepayments/cashfree-js";
 import { TextField, TextArea } from "../components/ui/TextField";
 import CustomSelect from "../components/ui/CustomSelect";
 import { QRCodeSVG } from "qrcode.react";
@@ -84,16 +85,57 @@ const BookingPage = () => {
   const [loginData, setLoginData] = useState({ email: '', password: '' });
 
   const [paymentMethods, setPaymentMethods] = useState([]);
-  const [selectedPayment, setSelectedPayment] = useState('upi_qr');
+  const [selectedPayment, setSelectedPayment] = useState('cashfree');
   const [upiTransactionId, setUpiTransactionId] = useState('');
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [bookingResult, setBookingResult] = useState(null);
   const [selectedBank, setSelectedBank] = useState('');
 
+  const getCashfree = async (mode = 'sandbox') => {
+    try {
+      return await loadCashfree({ mode });
+    } catch (err) {
+      console.error('Failed to load Cashfree SDK', err);
+      throw err;
+    }
+  };
+
+  const verifyAndFinishPayment = async (orderId) => {
+    try {
+      setLoading(true);
+      const verifyRes = await cashfreeAPI.verifyPayment(orderId);
+      if (verifyRes.success && verifyRes.data.is_paid) {
+        window.scrollTo(0, 0);
+        setCurrentStep(4);
+      } else {
+        setTimeout(async () => {
+          try {
+            const retryRes = await cashfreeAPI.verifyPayment(orderId);
+            if (retryRes.success && retryRes.data.is_paid) {
+              window.scrollTo(0, 0);
+              setCurrentStep(4);
+            } else {
+              setError('Payment status: ' + (retryRes.data?.order_status || 'Pending'));
+            }
+          } finally {
+            setLoading(false);
+          }
+        }, 1500);
+      }
+    } catch (err) {
+      setError('Payment verification error: ' + err.message);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchRooms();
     fetchPaymentMethods();
     checkAuthStatus();
+    const cfOrderId = searchParams.get('order_id');
+    if (cfOrderId) {
+      verifyAndFinishPayment(cfOrderId);
+    }
   }, []);
 
   const checkAuthStatus = async () => {
@@ -215,6 +257,32 @@ const BookingPage = () => {
 
       if (bookingResponse.success) {
         setBookingResult(bookingResponse.data.booking);
+
+        if (selectedPayment === 'cashfree') {
+          const orderRes = await cashfreeAPI.createOrder(
+            bookingResponse.data.booking.id,
+            window.location.origin + '/booking'
+          );
+          if (orderRes.success && orderRes.data.payment_session_id) {
+            const cashfree = await getCashfree(orderRes.data.environment || 'sandbox');
+            const checkoutOptions = {
+              paymentSessionId: orderRes.data.payment_session_id,
+              redirectTarget: '_modal',
+            };
+            cashfree.checkout(checkoutOptions).then((result) => {
+              if (result.error) {
+                setError(result.error.message || 'Payment cancelled');
+                setLoading(false);
+              }
+              if (result.paymentDetails) {
+                verifyAndFinishPayment(orderRes.data.order_id);
+              }
+            });
+            return;
+          } else {
+            throw new Error('Could not create Cashfree payment session');
+          }
+        }
 
         let backendPaymentMethod = selectedPayment;
         if (selectedPayment === 'upi_qr') backendPaymentMethod = 'upi';
@@ -705,11 +773,18 @@ const BookingPage = () => {
         {/* Payment Methods Sidebar */}
         <div className="bp-payment-sidebar">
           <button
+            className={`bp-payment-sidebar-btn ${selectedPayment === 'cashfree' ? 'active' : ''}`}
+            onClick={() => setSelectedPayment('cashfree')}
+          >
+            <span className="bp-tab-icon">⚡</span>
+            Instant Pay (Auto-Confirmed)
+          </button>
+          <button
             className={`bp-payment-sidebar-btn ${selectedPayment === 'upi_qr' ? 'active' : ''}`}
             onClick={() => setSelectedPayment('upi_qr')}
           >
             <span className="bp-tab-icon">📱</span>
-            UPI Options
+            Direct UPI QR
           </button>
           <button
             className={`bp-payment-sidebar-btn ${selectedPayment === 'credit_card' ? 'active' : ''}`}
@@ -736,6 +811,46 @@ const BookingPage = () => {
 
         {/* Payment Content */}
         <div className="bp-payment-content">
+          {selectedPayment === 'cashfree' && (
+            <div className="bp-cashfree-section">
+              <div className="bp-payment-content-header">
+                <h3>Cashfree Instant Checkout</h3>
+                <span className="bp-payment-content-amount">₹{(calculateTotalPrice() + calculateTaxes()).toLocaleString()}</span>
+              </div>
+              <p style={{ margin: '0 0 1.25rem', fontSize: '0.875rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
+                Pay securely using your preferred UPI app, QR code, Card, or Net Banking. Your reservation will be <strong>automatically confirmed in seconds</strong>.
+              </p>
+              
+              <div className="bp-cf-features" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <span style={{ fontSize: '1.5rem' }}>📱</span>
+                  <div>
+                    <strong style={{ display: 'block', fontSize: '0.875rem', color: '#fff' }}>UPI & Dynamic QR</strong>
+                    <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>Google Pay, PhonePe, Paytm, BHIM</span>
+                  </div>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <span style={{ fontSize: '1.5rem' }}>💳</span>
+                  <div>
+                    <strong style={{ display: 'block', fontSize: '0.875rem', color: '#fff' }}>Cards & EMI</strong>
+                    <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>Visa, Mastercard, RuPay</span>
+                  </div>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <span style={{ fontSize: '1.5rem' }}>🏦</span>
+                  <div>
+                    <strong style={{ display: 'block', fontSize: '0.875rem', color: '#fff' }}>Net Banking</strong>
+                    <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>50+ Indian banks</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: '10px', padding: '0.875rem 1rem', display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#22c55e', fontSize: '0.8125rem' }}>
+                <Shield size={18} />
+                <span>Zero manual checking: Your room will be confirmed automatically without entering any reference ID!</span>
+              </div>
+            </div>
+          )}
           {selectedPayment === 'upi_qr' && (
             <div className="bp-qr-section">
               <div className="bp-qr-card">
@@ -907,6 +1022,8 @@ const BookingPage = () => {
         >
           {loading ? (
             <><span className="bp-spinner" /> Processing...</>
+          ) : selectedPayment === 'cashfree' ? (
+            <><Sparkles size={16} /> Pay with Cashfree — ₹{(calculateTotalPrice() + calculateTaxes()).toLocaleString()}</>
           ) : selectedPayment === 'pay_at_hotel' ? (
             <><Check size={16} /> Confirm Booking — ₹{(calculateTotalPrice() + calculateTaxes()).toLocaleString()}</>
           ) : (
